@@ -1,0 +1,166 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand">Veterinaria de la Dra. Lissete</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" (click)="toCustomerForm()">Nuevo cliente</a>
+      </li>
+      <li *ngIf="customerList.length > 0" class="nav-item">
+        <a class="nav-link" (click)="toCustomerTable()">Clientes registrados</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <div [ngClass]="{'d-none' : !inCustomerForm}">
+    <h1 class="display-4">Registro de clientes</h1>
+    <hr/>
+    <form [formGroup]="customerForm" (ngSubmit)="addCustomer()">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">	
+            <label for="name">Nombre</label>
+            <input type="text" class="form-control" id="name"
+              formControlName="name">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="dui">DUI</label>
+            <input type="text" class="form-control" id="dui"
+              maxlength="10" formControlName="dui" aria-describedby="duiHelp">
+              <small id="duiHelp" class="form-text text-muted">Formáto válido: 01234567-8</small>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="petname">Nombre de la mascota</label>
+            <input type="text" class="form-control" id="petname"
+              formControlName="petName">
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Registrar</button>
+    </form>
+  </div>
+
+  <div [ngClass]="{'d-none' : !inCustomerTable}">
+    <h1 class="display-4">Clientes registrados</h1>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">DUI</th>
+          <th scope="col">Mascota</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of customerList; index as i">
+          <td>{{item.name}}</td>
+          <td>{{item.dui}}</td>
+          <td>{{item.petName}}</td>
+          <td>
+            <button type="button" class="btn btn-primary mr-2" (click)="toAppointmentForm(i)">Nueva consulta</button>
+            <button type="button" class="btn btn-info" (click)="toAppointmentTable(i)">Consultas registradas</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="customerIndex != undefined" [ngClass]="{'d-none' : !inAppointmentForm}">
+    <h1 class="display-4">Registro de consultas</h1>
+    <hr/>
+    <form [formGroup]="appointmentForm" (ngSubmit)="addAppointment()">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">Cliente</span>
+              </div>
+              <input type="text" class="form-control" id="customer"
+                aria-describedby="basic-addon3" value="{{customerList[customerIndex].name}}" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">Mascota</span>
+              </div>
+              <input type="text" class="form-control" id="petname"
+                aria-describedby="basic-addon3" value="{{customerList[customerIndex].petName}}" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">	
+            <label for="treatment">Tratamiento</label>
+            <input type="text" class="form-control" id="treatment"
+              formControlName="treatment">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="drug">Medicina</label>
+            <input type="text" class="form-control" id="drug"
+              formControlName="drug">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <label for="cost">Costo</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">$</div>
+            </div>
+            <input type="number" class="form-control" id="cost"
+              min="0.00" step="0.01" formControlName="cost">
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">Registrar</button>
+    </form>
+  </div>
+
+  <div *ngIf="customerIndex != undefined" [ngClass]="{'d-none' : !inAppointmentTable}">
+    <h1 class="display-4">Consultas registradas</h1>
+    <p class="h3">
+      Cliente: <i><b>{{customerList[customerIndex].name}}</b></i>
+      <br>
+      Mascota: <i><b>{{customerList[customerIndex].petName}}</b></i>
+    </p>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Tratamiento</th>
+          <th scope="col">Medicina</th>
+          <th scope="col">Costo</th>
+          <th scope="col">Descuento</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of customerList[customerIndex].appointments">
+          <td>{{item.treatment}}</td>
+          <td>{{item.drug}}</td>
+          <td>${{item.regularCost.toFixed(2)}}</td>
+          <td>${{item.discount.toFixed(2)}}</td>
+          <td>${{item.realCost.toFixed(2)}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
